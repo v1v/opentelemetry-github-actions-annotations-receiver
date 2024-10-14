@@ -1,0 +1,31 @@
+receivers:
+  githubactionsannotations:
+    webhook_secret: ${env:WEBHOOK_SECRET}
+    token: ${env:GITHUB_TOKEN}
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+processors:
+  batch:
+
+extensions:
+  pprof:
+  zpages:
+    endpoint: "localhost:55679"
+
+exporters:
+  debug:
+    verbosity: basic
+
+service:
+  extensions: [zpages, pprof]
+  pipelines:
+    logs:
+      receivers: [githubactionsannotations]
+      processors: [batch]
+      exporters: [debug]
+  telemetry:
+    logs:
+      level: debug
