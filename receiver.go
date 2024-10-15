@@ -135,19 +135,19 @@ func (rec *githubactionsannotationsreceiver) handleWorkflowJobEvent(ctx context.
 	return
 }
 
-func (ghalr *githubactionsannotationsreceiver) processWorkflowJobEvent(
+func (rec *githubactionsannotationsreceiver) processWorkflowJobEvent(
 	ctx context.Context,
 	withWorkflowInfoFields func(fields ...zap.Field) []zap.Field,
 	event *github.WorkflowJobEvent,
 ) error {
-	annotations, err := getAnnotations(context.Background(), event, ghalr.ghClient)
+	annotations, err := getAnnotations(context.Background(), event, rec.ghClient)
 	if err != nil {
-		ghalr.logger.Error("Failed to get job annotations", zap.Error(err))
+		rec.logger.Error("Failed to get job annotations", zap.Error(err))
 	}
 
 	run := mapRun(event.WorkflowJob)
 	repository := mapRepository(event.GetRepo())
-	_, err = ghalr.processAnnotations(ctx, annotations, repository, run, withWorkflowInfoFields)
+	_, err = rec.processAnnotations(ctx, annotations, repository, run, withWorkflowInfoFields)
 	if err != nil {
 		return err
 	}
@@ -173,11 +173,11 @@ func getAnnotations(ctx context.Context, ghEvent *github.WorkflowJobEvent, ghCli
 	return allAnnotations, nil
 }
 
-func (ghalr *githubactionsannotationsreceiver) processAnnotations(ctx context.Context, batch []*github.CheckRunAnnotation, repository Repository, run Run, withWorkflowInfoFields func(fields ...zap.Field) []zap.Field) (int, error) {
+func (rec *githubactionsannotationsreceiver) processAnnotations(ctx context.Context, batch []*github.CheckRunAnnotation, repository Repository, run Run, withWorkflowInfoFields func(fields ...zap.Field) []zap.Field) (int, error) {
 	logs := plog.NewLogs()
 	resourceLogs := logs.ResourceLogs().AppendEmpty()
 	resourceAttributes := resourceLogs.Resource().Attributes()
-	serviceName := generateServiceName(ghalr.config, repository.FullName)
+	serviceName := generateServiceName(rec.config, repository.FullName)
 	resourceAttributes.PutStr("service.name", serviceName)
 	scopeLogsSlice := resourceLogs.ScopeLogs()
 	scopeLogs := scopeLogsSlice.AppendEmpty()
@@ -192,22 +192,22 @@ func (ghalr *githubactionsannotationsreceiver) processAnnotations(ctx context.Co
 	if logs.LogRecordCount() == 0 {
 		return 0, nil
 	}
-	ghalr.obsrecv.StartLogsOp(ctx)
-	err := ghalr.consumeLogsWithRetry(ctx, withWorkflowInfoFields, logs)
+	rec.obsrecv.StartLogsOp(ctx)
+	err := rec.consumeLogsWithRetry(ctx, withWorkflowInfoFields, logs)
 	if err != nil {
-		ghalr.logger.Error("Failed to consume annotations", withWorkflowInfoFields(zap.Error(err), zap.Int("dropped_items", logs.LogRecordCount()))...)
+		rec.logger.Error("Failed to consume annotations", withWorkflowInfoFields(zap.Error(err), zap.Int("dropped_items", logs.LogRecordCount()))...)
 	} else {
-		ghalr.logger.Info("Successfully consumed annotations", withWorkflowInfoFields(zap.Int("log_record_count", logs.LogRecordCount()))...)
+		rec.logger.Info("Successfully consumed annotations", withWorkflowInfoFields(zap.Int("log_record_count", logs.LogRecordCount()))...)
 	}
-	ghalr.obsrecv.EndLogsOp(ctx, "github-actions", logs.LogRecordCount(), err)
+	rec.obsrecv.EndLogsOp(ctx, "github-actions", logs.LogRecordCount(), err)
 	return logs.LogRecordCount(), err
 }
 
-func (ghalr *githubactionsannotationsreceiver) consumeLogsWithRetry(ctx context.Context, withWorkflowInfoFields func(fields ...zap.Field) []zap.Field, logs plog.Logs) error {
+func (rec *githubactionsannotationsreceiver) consumeLogsWithRetry(ctx context.Context, withWorkflowInfoFields func(fields ...zap.Field) []zap.Field, logs plog.Logs) error {
 	expBackoff := backoff.ExponentialBackOff{
-		MaxElapsedTime:      ghalr.config.Retry.MaxElapsedTime,
-		InitialInterval:     ghalr.config.Retry.InitialInterval,
-		MaxInterval:         ghalr.config.Retry.MaxInterval,
+		MaxElapsedTime:      rec.config.Retry.MaxElapsedTime,
+		InitialInterval:     rec.config.Retry.InitialInterval,
+		MaxInterval:         rec.config.Retry.MaxInterval,
 		RandomizationFactor: backoff.DefaultRandomizationFactor,
 		Multiplier:          backoff.DefaultMultiplier,
 		Stop:                backoff.Stop,
@@ -216,12 +216,12 @@ func (ghalr *githubactionsannotationsreceiver) consumeLogsWithRetry(ctx context.
 	expBackoff.Reset()
 	retryableErr := consumererror.Logs{}
 	for {
-		err := ghalr.consumer.ConsumeLogs(ctx, logs)
+		err := rec.consumer.ConsumeLogs(ctx, logs)
 		if err == nil {
 			return nil
 		}
 		if consumererror.IsPermanent(err) {
-			ghalr.logger.Error(
+			rec.logger.Error(
 				"Consuming logs failed. The error is not retryable. Dropping data.",
 				withWorkflowInfoFields(
 					zap.Error(err),
@@ -235,7 +235,7 @@ func (ghalr *githubactionsannotationsreceiver) consumeLogsWithRetry(ctx context.
 		}
 		backoffDelay := expBackoff.NextBackOff()
 		if backoffDelay == backoff.Stop {
-			ghalr.logger.Error(
+			rec.logger.Error(
 				"Max elapsed time expired. Dropping data.",
 				withWorkflowInfoFields(
 					zap.Error(err),
@@ -244,7 +244,7 @@ func (ghalr *githubactionsannotationsreceiver) consumeLogsWithRetry(ctx context.
 			)
 			return err
 		}
-		ghalr.logger.Debug(
+		rec.logger.Debug(
 			"Consuming logs failed. Will retry the request after interval.",
 			withWorkflowInfoFields(
 				zap.Error(err),
