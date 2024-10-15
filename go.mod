@@ -3,12 +3,14 @@ module github.com/v1v/opentelemetry-github-actions-annotations-receiver
 go 1.23.2
 
 require (
+	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/google/go-github/v66 v66.0.0
 	github.com/julienschmidt/httprouter v1.3.0
 	go.opentelemetry.io/collector/component v0.102.0
 	go.opentelemetry.io/collector/config/confighttp v0.102.0
 	go.opentelemetry.io/collector/config/configopaque v1.9.0
 	go.opentelemetry.io/collector/consumer v0.102.0
+	go.opentelemetry.io/collector/pdata v1.9.0
 	go.opentelemetry.io/collector/receiver v0.102.0
 	go.uber.org/zap v1.27.0
 )
@@ -45,7 +47,6 @@ require (
 	go.opentelemetry.io/collector/extension v0.102.0 // indirect
 	go.opentelemetry.io/collector/extension/auth v0.102.0 // indirect
 	go.opentelemetry.io/collector/featuregate v1.9.0 // indirect
-	go.opentelemetry.io/collector/pdata v1.9.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.52.0 // indirect
 	go.opentelemetry.io/otel v1.27.0 // indirect
 	go.opentelemetry.io/otel/metric v1.27.0 // indirect
