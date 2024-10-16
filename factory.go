@@ -2,6 +2,7 @@ package opentelemetrygithubactionsannotationsreceiver
 
 import (
 	"context"
+	"fmt"
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/config/confighttp"
@@ -12,9 +13,15 @@ import (
 func createDefaultConfig() component.Config {
 	return &Config{
 		ServerConfig: confighttp.ServerConfig{
-			Endpoint: "localhost:33333",
+			Endpoint: fmt.Sprintf("%s:%d", "0.0.0.0", defaultPort),
 		},
-		Path: "/githubactionsannotations",
+		Path: defaultPath,
+		Retry: RetryConfig{
+			InitialInterval: defaultRetryInitialInterval,
+			MaxInterval:     defaultRetryMaxInterval,
+			MaxElapsedTime:  defaultRetryMaxElapsedTime,
+		},
+		BatchSize: 10000,
 	}
 }
 

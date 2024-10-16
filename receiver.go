@@ -29,7 +29,10 @@ func newLogsReceiver(cfg *Config, params receiver.CreateSettings, consumer consu
 	if err != nil {
 		return nil, err
 	}
-	ghClient := github.NewClient(nil).WithAuthToken(string(cfg.Token))
+	ghClient, err := createGitHubClient(cfg.GitHubAuth)
+	if err != nil {
+		return nil, err
+	}
 	rateLimit, _, err := ghClient.RateLimit.Get(context.Background())
 	if err != nil {
 		return nil, err
