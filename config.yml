@@ -1,7 +1,8 @@
 receivers:
   githubactionsannotations:
     webhook_secret: ${env:WEBHOOK_SECRET}
-    token: ${env:GITHUB_TOKEN}
+    github_auth:
+      token: ${env:GITHUB_TOKEN}
   otlp:
     protocols:
       grpc:
