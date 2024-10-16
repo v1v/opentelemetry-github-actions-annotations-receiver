@@ -20,7 +20,7 @@ const (
 
 type Config struct {
 	confighttp.ServerConfig `mapstructure:",squash"`
-	Path                    string
+	Path                    string              `mapstructure:"path"`
 	WebhookSecret           configopaque.String `mapstructure:"webhook_secret"`
 	GitHubAuth              GitHubAuth          `mapstructure:"github_auth"`
 	Retry                   RetryConfig         `mapstructure:"retry"`
