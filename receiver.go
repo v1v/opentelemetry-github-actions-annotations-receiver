@@ -182,6 +182,8 @@ func (rec *githubactionsannotationsreceiver) processAnnotations(ctx context.Cont
 	resourceAttributes := resourceLogs.Resource().Attributes()
 	serviceName := generateServiceName(rec.config, repository.FullName)
 	resourceAttributes.PutStr("service.name", serviceName)
+	resourceAttributes.PutStr("github.event", "github-actions")
+	resourceAttributes.PutStr("github.event.type", "annotations")
 	scopeLogsSlice := resourceLogs.ScopeLogs()
 	scopeLogs := scopeLogsSlice.AppendEmpty()
 	logRecords := scopeLogs.LogRecords()
