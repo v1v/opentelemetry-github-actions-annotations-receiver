@@ -183,7 +183,7 @@ func (rec *githubactionsannotationsreceiver) processAnnotations(ctx context.Cont
 	resourceAttributes := resourceLogs.Resource().Attributes()
 	serviceName := generateServiceName(rec.config, repository.FullName)
 	resourceAttributes.PutStr("service.name", serviceName)
-	resourceAttributes.PutStr("event.dataset", "annotations")
+	resourceAttributes.PutStr("event.dataset", "github.annotations")
 	scopeLogsSlice := resourceLogs.ScopeLogs()
 	scopeLogs := scopeLogsSlice.AppendEmpty()
 	logRecords := scopeLogs.LogRecords()
