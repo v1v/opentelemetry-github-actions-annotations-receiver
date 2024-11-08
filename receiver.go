@@ -124,6 +124,7 @@ func (rec *githubactionsannotationsreceiver) handleWorkflowJobEvent(ctx context.
 			zap.String("github.repository", event.GetRepo().GetFullName()),
 			zap.String("github.workflow_run.name", *event.GetWorkflowJob().WorkflowName),
 			zap.Int64("github.workflow_run.id", event.GetWorkflowJob().GetRunID()),
+			zap.String("github.workflow_run.html_url", event.GetWorkflowJob().GetHTMLURL()),
 			zap.Int("github.workflow_run.run_attempt", int(event.GetWorkflowJob().GetRunAttempt())),
 		}
 		return append(workflowInfoFields, fields...)
@@ -182,8 +183,7 @@ func (rec *githubactionsannotationsreceiver) processAnnotations(ctx context.Cont
 	resourceAttributes := resourceLogs.Resource().Attributes()
 	serviceName := generateServiceName(rec.config, repository.FullName)
 	resourceAttributes.PutStr("service.name", serviceName)
-	resourceAttributes.PutStr("github.event", "github-actions")
-	resourceAttributes.PutStr("github.event.type", "annotations")
+	resourceAttributes.PutStr("event.dataset", "annotations")
 	scopeLogsSlice := resourceLogs.ScopeLogs()
 	scopeLogs := scopeLogsSlice.AppendEmpty()
 	logRecords := scopeLogs.LogRecords()
