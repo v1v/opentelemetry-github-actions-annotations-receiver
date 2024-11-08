@@ -55,4 +55,5 @@ func attachRunAttributes(logRecord *plog.LogRecord, run Run) {
 	logRecord.Attributes().PutStr("github.workflow_run.created_at", pcommon.NewTimestampFromTime(run.CreatedAt).String())
 	logRecord.Attributes().PutStr("github.workflow_run.completed_at", pcommon.NewTimestampFromTime(run.CompletedAt).String())
 	logRecord.Attributes().PutStr("github.workflow_run.head_branch", run.HeadBranch)
+	logRecord.Attributes().PutStr("github.workflow_run.html_url", run.URL)
 }

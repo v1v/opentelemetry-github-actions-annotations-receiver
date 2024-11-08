@@ -124,7 +124,6 @@ func (rec *githubactionsannotationsreceiver) handleWorkflowJobEvent(ctx context.
 			zap.String("github.repository", event.GetRepo().GetFullName()),
 			zap.String("github.workflow_run.name", *event.GetWorkflowJob().WorkflowName),
 			zap.Int64("github.workflow_run.id", event.GetWorkflowJob().GetRunID()),
-			zap.String("github.workflow_run.html_url", event.GetWorkflowJob().GetHTMLURL()),
 			zap.Int("github.workflow_run.run_attempt", int(event.GetWorkflowJob().GetRunAttempt())),
 		}
 		return append(workflowInfoFields, fields...)
