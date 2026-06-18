@@ -73,7 +73,7 @@ func (rec *githubactionsannotationsreceiver) Start(ctx context.Context, host com
 	}
 	go func() {
 		if err := rec.server.Serve(listener); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			rec.settings.TelemetrySettings.ReportStatus(component.NewFatalErrorEvent(err))
+			rec.logger.Error("Receiver server terminated unexpectedly", zap.Error(err))
 		}
 	}()
 	return nil
