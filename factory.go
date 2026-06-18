@@ -12,11 +12,12 @@ import (
 )
 
 func createDefaultConfig() component.Config {
+	netAddr := confignet.NewDefaultAddrConfig()
+	netAddr.Transport = confignet.TransportTypeTCP
+	netAddr.Endpoint = fmt.Sprintf("%s:%d", "0.0.0.0", defaultPort)
 	return &Config{
-		ServerConfig: confighttp.ServerConfig{
-			NetAddr: confignet.AddrConfig{Endpoint: fmt.Sprintf("%s:%d", "0.0.0.0", defaultPort)},
-		},
-		Path: defaultPath,
+		ServerConfig: confighttp.ServerConfig{NetAddr: netAddr},
+		Path:         defaultPath,
 		Retry: RetryConfig{
 			InitialInterval: defaultRetryInitialInterval,
 			MaxInterval:     defaultRetryMaxInterval,
