@@ -20,7 +20,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func newLogsReceiver(cfg *Config, params receiver.CreateSettings, consumer consumer.Logs) (*githubactionsannotationsreceiver, error) {
+func newLogsReceiver(cfg *Config, params receiver.Settings, consumer consumer.Logs) (*githubactionsannotationsreceiver, error) {
 	obsrecv, err := receiverhelper.NewObsReport(receiverhelper.ObsReportSettings{
 		ReceiverID:             params.ID,
 		Transport:              "http",
@@ -52,14 +52,14 @@ type githubactionsannotationsreceiver struct {
 	config   *Config
 	consumer consumer.Logs
 	server   *http.Server
-	settings receiver.CreateSettings
+	settings receiver.Settings
 	logger   *zap.Logger
 	ghClient *github.Client
 	obsrecv  *receiverhelper.ObsReport
 }
 
 func (rec *githubactionsannotationsreceiver) Start(ctx context.Context, host component.Host) error {
-	endpoint := fmt.Sprintf("%s%s", rec.config.ServerConfig.Endpoint, rec.config.Path)
+	endpoint := fmt.Sprintf("%s%s", rec.config.ServerConfig.NetAddr.Endpoint, rec.config.Path)
 	rec.logger.Info("Starting receiver", zap.String("endpoint", endpoint))
 	listener, err := rec.config.ServerConfig.ToListener(ctx)
 	if err != nil {
@@ -67,13 +67,13 @@ func (rec *githubactionsannotationsreceiver) Start(ctx context.Context, host com
 	}
 	router := httprouter.New()
 	router.POST(rec.config.Path, rec.handleEvent)
-	rec.server, err = rec.config.ServerConfig.ToServer(ctx, host, rec.settings.TelemetrySettings, router)
+	rec.server, err = rec.config.ServerConfig.ToServer(ctx, host.GetExtensions(), rec.settings.TelemetrySettings, router)
 	if err != nil {
 		return err
 	}
 	go func() {
 		if err := rec.server.Serve(listener); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			rec.settings.TelemetrySettings.ReportStatus(component.NewFatalErrorEvent(err))
+			rec.logger.Error("Receiver server terminated unexpectedly", zap.Error(err))
 		}
 	}()
 	return nil

@@ -2,6 +2,7 @@ SHELL := bash
 MAKEFLAGS += --no-print-directory
 WEBHOOK_SECRET ?= secret
 GITHUB_TOKEN ?= $(shell gh auth token)
+OTEL_VERSION=v0.154.0
 
 #######################
 ## Tools
@@ -21,7 +22,7 @@ endif
 ## @help:install-ocb:Install ocb.
 .PHONY: install-ocb
 install-ocb:
-	GOBIN=$(CURDIR)/bin go install go.opentelemetry.io/collector/cmd/builder@v0.102.0
+	GOBIN=$(CURDIR)/bin go install go.opentelemetry.io/collector/cmd/builder@$(OTEL_VERSION)
 
 ## MAKE GOALS
 .PHONY: build
