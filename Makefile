@@ -2,7 +2,7 @@ SHELL := bash
 MAKEFLAGS += --no-print-directory
 WEBHOOK_SECRET ?= secret
 GITHUB_TOKEN ?= $(shell gh auth token)
-OTEL_VERSION=v0.142.0
+OTEL_VERSION=v0.143.0
 
 #######################
 ## Tools
