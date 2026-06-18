@@ -6,6 +6,7 @@ import (
 
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/config/confighttp"
+	"go.opentelemetry.io/collector/config/confignet"
 	"go.opentelemetry.io/collector/consumer"
 	"go.opentelemetry.io/collector/receiver"
 )
@@ -13,7 +14,7 @@ import (
 func createDefaultConfig() component.Config {
 	return &Config{
 		ServerConfig: confighttp.ServerConfig{
-			Endpoint: fmt.Sprintf("%s:%d", "0.0.0.0", defaultPort),
+			NetAddr: confignet.AddrConfig{Endpoint: fmt.Sprintf("%s:%d", "0.0.0.0", defaultPort)},
 		},
 		Path: defaultPath,
 		Retry: RetryConfig{

@@ -91,7 +91,7 @@ func TestCreateDefaultConfig(t *testing.T) {
 	cfg := createDefaultConfig().(*Config)
 
 	require.Equal(t, defaultPath, cfg.Path)
-	require.Equal(t, "0.0.0.0:33333", cfg.ServerConfig.Endpoint)
+	require.Equal(t, "0.0.0.0:33333", cfg.ServerConfig.NetAddr.Endpoint)
 	require.Equal(t, 10000, cfg.BatchSize)
 	require.Equal(t, defaultRetryInitialInterval, cfg.Retry.InitialInterval)
 	require.Equal(t, defaultRetryMaxInterval, cfg.Retry.MaxInterval)

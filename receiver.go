@@ -59,7 +59,7 @@ type githubactionsannotationsreceiver struct {
 }
 
 func (rec *githubactionsannotationsreceiver) Start(ctx context.Context, host component.Host) error {
-	endpoint := fmt.Sprintf("%s%s", rec.config.ServerConfig.Endpoint, rec.config.Path)
+	endpoint := fmt.Sprintf("%s%s", rec.config.ServerConfig.NetAddr.Endpoint, rec.config.Path)
 	rec.logger.Info("Starting receiver", zap.String("endpoint", endpoint))
 	listener, err := rec.config.ServerConfig.ToListener(ctx)
 	if err != nil {
