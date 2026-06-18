@@ -3,6 +3,7 @@ receivers:
     webhook_secret: ${env:WEBHOOK_SECRET}
     github_auth:
       token: ${env:GITHUB_TOKEN}
+    path: /events
   otlp:
     protocols:
       grpc:
