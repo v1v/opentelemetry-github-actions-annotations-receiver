@@ -20,7 +20,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func newLogsReceiver(cfg *Config, params receiver.CreateSettings, consumer consumer.Logs) (*githubactionsannotationsreceiver, error) {
+func newLogsReceiver(cfg *Config, params receiver.Settings, consumer consumer.Logs) (*githubactionsannotationsreceiver, error) {
 	obsrecv, err := receiverhelper.NewObsReport(receiverhelper.ObsReportSettings{
 		ReceiverID:             params.ID,
 		Transport:              "http",
@@ -52,7 +52,7 @@ type githubactionsannotationsreceiver struct {
 	config   *Config
 	consumer consumer.Logs
 	server   *http.Server
-	settings receiver.CreateSettings
+	settings receiver.Settings
 	logger   *zap.Logger
 	ghClient *github.Client
 	obsrecv  *receiverhelper.ObsReport
