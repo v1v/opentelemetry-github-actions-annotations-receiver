@@ -67,7 +67,7 @@ func (rec *githubactionsannotationsreceiver) Start(ctx context.Context, host com
 	}
 	router := httprouter.New()
 	router.POST(rec.config.Path, rec.handleEvent)
-	rec.server, err = rec.config.ServerConfig.ToServer(ctx, host, rec.settings.TelemetrySettings, router)
+	rec.server, err = rec.config.ServerConfig.ToServer(ctx, host.GetExtensions(), rec.settings.TelemetrySettings, router)
 	if err != nil {
 		return err
 	}
