@@ -1,12 +1,12 @@
 module github.com/v1v/opentelemetry-github-actions-annotations-receiver
 
-go 1.23.2
+go 1.26.4
 
 require (
+	github.com/bradleyfalzon/ghinstallation/v2 v2.11.0
 	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/google/go-github/v66 v66.0.0
 	github.com/julienschmidt/httprouter v1.3.0
-	github.com/open-telemetry/opentelemetry-collector-contrib/internal/common v0.102.0
 	github.com/stretchr/testify v1.9.0
 	go.opentelemetry.io/collector/component v0.102.0
 	go.opentelemetry.io/collector/config/confighttp v0.102.0
@@ -19,7 +19,6 @@ require (
 )
 
 require (
-	github.com/bradleyfalzon/ghinstallation/v2 v2.11.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
